@@ -41,7 +41,6 @@ jobs:
           rollbackonhealthcheckfailed: true
         if: ${{ github.event_name == 'push' }}
   tag_release:
-    if: ${{ github.event_name == 'push' }}
     needs: [simple_deployment_pipeline]
     runs-on: ubuntu-20.04
     steps:
@@ -51,3 +50,4 @@ jobs:
         GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         DEFAULT_BUMP: patch
         DRY_RUN: true
+      if: ${{ github.event_name == 'push' }}
