@@ -58,7 +58,9 @@ jobs:
           github.event_name == 'push'
             && !contains(github.event.head_commit.message, 'skip')
   state_of_deployment:
-    if: ${{ github.event_name == 'push' }}
+    if: |
+      github.event_name == 'push'
+        && !contains(github.event.head_commit.message, 'skip')
     needs: [simple_deployment_pipeline]
     runs-on: ubuntu-20.04
     steps:
@@ -67,12 +69,16 @@ jobs:
         if: ${{ success() }}
         with:
           severity: info
-          details: A new version of Pokedex deployded
+          color: '#008000'
+          text: A new version of Pokedex deployded
+          description: by ${{ github.event.head_commit.author.username }}
           webhookUrl: ${{ secrets.DISCORD_WEBHOOK }}
       - name: deploy failure
         uses: rjstone/discord-webhook-notify@v1
         if: ${{ failure() }}
         with:
           severity: error
-          details: Build failed
+          color: '#ff0000'
+          text: Build failed
+          description: commit ${{ github.event.head_commit.url }} by ${{ github.event.head_commit.author.username }} broke the build :(
           webhookUrl: ${{ secrets.DISCORD_WEBHOOK }}
